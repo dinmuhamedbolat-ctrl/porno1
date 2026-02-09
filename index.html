@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Валентинка ❤️</title>
+    <title>Для Инкары ❤️</title>
     <style>
         body {
             display: flex;
@@ -14,8 +14,9 @@
             margin: 0;
             background-color: #ffe6e6;
             font-family: 'Arial', sans-serif;
-            overflow: hidden; /* Чтобы не появлялись полосы прокрутки */
+            overflow: hidden;
             text-align: center;
+            transition: background-color 0.5s;
         }
 
         h1 {
@@ -28,6 +29,7 @@
         .buttons {
             display: flex;
             gap: 20px;
+            align-items: center; /* Чтобы кнопки центрировались при разном размере */
         }
 
         button {
@@ -43,21 +45,23 @@
             background-color: #ff4d6d;
             color: white;
             box-shadow: 0 4px 15px rgba(255, 77, 109, 0.4);
-            transition: transform 0.2s;
+            /* Важно: плавное изменение размера */
+            transition: transform 0.3s ease, background-color 0.3s;
             z-index: 10;
+            /* Начальный масштаб */
+            transform: scale(1);
         }
         
-        #yesBtn:active {
-            transform: scale(0.95);
+        #yesBtn:hover {
+             background-color: #ff3355;
         }
 
         #noBtn {
             background-color: #fff;
             color: #ff4d6d;
             border: 2px solid #ff4d6d;
-            /* Самое важное: плавная анимация движения */
-            transition: top 0.4s ease, left 0.4s ease, background-color 0.3s;
-            position: relative; /* Изначально стоит ровно */
+            transition: top 0.4s ease, left 0.4s ease;
+            position: relative;
             z-index: 10;
         }
 
@@ -91,7 +95,7 @@
             position: absolute;
             color: #ff4d6d;
             animation: float 4s linear forwards;
-            pointer-events: none; /* Чтобы сердечки не мешали кликать */
+            pointer-events: none;
             z-index: 1;
         }
 
@@ -102,8 +106,13 @@
 </head>
 <body>
 
+    <audio id="noSound" src="https://www.myinstants.com/media/sounds/vine-boom.mp3"></audio>
+    
+    <audio id="yesMusic" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+
+
     <div class="container" id="mainCard">
-        <h1>Ты будешь моей валентинкой? 🥺</h1>
+        <h1>Ты будешь моей валентинкой? </h1>
         <div class="buttons">
             <button id="yesBtn">ДА!</button>
             <button id="noBtn">Нет</button>
@@ -119,48 +128,54 @@
         const yesBtn = document.getElementById('yesBtn');
         const mainCard = document.getElementById('mainCard');
         const message = document.getElementById('message');
+        
+        // Получаем элементы аудио
+        const noSound = document.getElementById('noSound');
+        const yesMusic = document.getElementById('yesMusic');
 
-        // Функция перемещения кнопки
+        // Переменная для текущего размера кнопки "Да"
+        let currentYesScale = 1;
+
         function moveButton() {
-            // Получаем размеры окна и кнопки
+            // 1. Увеличиваем кнопку "Да"
+            currentYesScale += 0.15; // Увеличиваем на 15% каждый раз
+            yesBtn.style.transform = `scale(${currentYesScale})`;
+
+            // 2. Воспроизводим звук "Нет"
+            // Сбрасываем время на 0, чтобы звук играл с начала при быстрых наведениях
+            noSound.currentTime = 0; 
+            // Важно: браузеры иногда блокируют автовоспроизведение, но после первого клика по странице должно работать
+            noSound.play().catch(error => console.log("Автовоспроизведение звука заблокировано браузером до взаимодействия"));
+
+
+            // 3. Логика перемещения (как раньше)
             const windowWidth = window.innerWidth;
             const windowHeight = window.innerHeight;
             const btnWidth = noBtn.offsetWidth;
             const btnHeight = noBtn.offsetHeight;
-
-            // Вычисляем случайную позицию, но с отступами от краев (padding),
-            // чтобы кнопка не уходила за экран
             const padding = 20; 
             const randomX = Math.random() * (windowWidth - btnWidth - padding * 2) + padding;
             const randomY = Math.random() * (windowHeight - btnHeight - padding * 2) + padding;
-
-            // Применяем новые координаты
             noBtn.style.position = 'absolute';
             noBtn.style.left = randomX + 'px';
             noBtn.style.top = randomY + 'px';
         }
 
-        // Событие для мыши (компьютер)
         noBtn.addEventListener('mouseover', moveButton);
-        
-        // Событие для касания (телефон) - чтобы на телефоне она тоже убегала при попытке нажать
         noBtn.addEventListener('touchstart', (e) => {
-            e.preventDefault(); // Чтобы не сработал клик
+            e.preventDefault();
             moveButton();
         });
 
         yesBtn.addEventListener('click', () => {
-            // Скрываем карточку с вопросом
             mainCard.style.opacity = '0'; 
             setTimeout(() => { mainCard.style.display = 'none'; }, 500);
-            
-            // Показываем сообщение
             message.style.display = 'block';
-            
-            // Запускаем салют из сердечек
             setInterval(createHeart, 100);
-            // Меняем цвет фона на более праздничный
             document.body.style.backgroundColor = '#fff0f3';
+
+            // Включаем музыку победы!
+            yesMusic.play();
         });
 
         function createHeart() {
@@ -169,16 +184,12 @@
             heart.innerHTML = '❤️';
             heart.style.left = Math.random() * 100 + 'vw';
             heart.style.top = '100vh';
-            // Случайный размер сердечек
             const size = Math.random() * 20 + 10; 
             heart.style.fontSize = size + 'px';
-            // Случайная скорость
             heart.style.animationDuration = Math.random() * 2 + 3 + 's';
-            
             document.body.appendChild(heart);
             setTimeout(() => heart.remove(), 5000);
         }
     </script>
 </body>
-
 </html>
