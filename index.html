@@ -108,7 +108,7 @@
 
     <audio id="noSound" src="https://www.myinstants.com/media/sounds/vine-boom.mp3"></audio>
     
-    <audio id="yesMusic" loop src="music.mp3"></audio>
+    <audio id="yesMusic" loop src="late_night_drive_home_-_Stress_Relief_(mp3.pm).mp3"></audio>
 
 
     <div class="container" id="mainCard">
@@ -138,7 +138,7 @@
 
         function moveButton() {
             // 1. Увеличиваем кнопку "Да"
-            currentYesScale += 0.25; // Увеличиваем на 15% каждый раз
+            currentYesScale += 0.35; // Увеличиваем на 15% каждый раз
             yesBtn.style.transform = `scale(${currentYesScale})`;
 
             // 2. Воспроизводим звук "Нет"
@@ -181,7 +181,7 @@
         function createHeart() {
             const heart = document.createElement('div');
             heart.classList.add('heart');
-            heart.innerHTML = '❤️';
+            heart.innerHTML = '🩷';
             heart.style.left = Math.random() * 100 + 'vw';
             heart.style.top = '100vh';
             const size = Math.random() * 20 + 10; 
@@ -193,6 +193,7 @@
     </script>
 </body>
 </html>
+
 
 
 
